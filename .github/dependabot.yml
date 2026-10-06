@@ -1,10 +1,12 @@
 # Dependabot version updates. Grouped, so one ecosystem opens one pull request a week.
+# Pull requests target dev, the integration branch, and reach main with a release.
 version: 2
 updates:
   # Always present. A pinned action rots, and an unmaintained action is a supply
   # chain problem.
   - package-ecosystem: github-actions
     directory: /
+    target-branch: dev
     schedule:
       interval: weekly
     labels: [dependencies]
@@ -16,6 +18,7 @@ updates:
   # because an Astro major usually needs the upgrade guide.
   - package-ecosystem: npm
     directory: /
+    target-branch: dev
     schedule:
       interval: weekly
     labels: [dependencies]
@@ -35,6 +38,7 @@ updates:
   # - node stays on the Active LTS major. Move by hand once the next major is LTS.
   - package-ecosystem: docker
     directory: /
+    target-branch: dev
     schedule:
       interval: weekly
     labels: [dependencies]

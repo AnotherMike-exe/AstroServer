@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="This page does not exist.">
+	<section class="wrap missing">
+		<h1>This page does not exist.</h1>
+		<p class="lede">
+			The link may be old, or the page may have moved. Start from the home page, or search the
+			documentation.
+		</p>
+		<div class="actions">
+			<a class="button primary" href="/">Go to the home page</a>
+			<a class="button quiet" href="/docs/">Search the docs</a>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.missing {
+		padding-block: 6rem 2rem;
+	}
+	h1 {
+		font-size: clamp(2.4rem, 5vw, 3.8rem);
+		font-weight: 750;
+		letter-spacing: -0.035em;
+		max-width: 16ch;
+	}
+	.lede {
+		margin-top: 1.5rem;
+		max-width: 34rem;
+		font-size: 1.2rem;
+		color: var(--ps-ink-soft);
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2.25rem;
+	}
+</style>

@@ -14,7 +14,10 @@ runs it behind a reverse proxy.
 
 | Component | Does | Built with |
 |---|---|---|
-| Site source | Pages, projects and docs as Markdown/MDX | Astro 7, Starlight |
+| Site pages | Home with the project list, project pages, store, 404 | Astro 7 pages |
+| Projects collection | One Markdown file per project, read by the home and project pages | Astro content collection |
+| Docs | Project documentation at `/docs/`, with search | Starlight |
+| Brand | Tokens shared by both, logos generated from the master vector | CSS, `scripts/BuildLogos.py` |
 | Build stage | Turns the source into static files in `dist/` | `node:24-alpine` |
 | Runtime | Serves `dist/` on port 8080 | `nginx:1.30-alpine` |
 | Entrypoint | Applies PUID/PGID/UMASK/TZ/DEBUG, prepares `/config` | POSIX sh |
@@ -48,7 +51,8 @@ There is no database. Upgrading means pulling a new tag; nothing migrates.
 ## Deployment
 
 - Image: `ghcr.io/anothermike-exe/astro-server`
-- Tags: `latest` and `sha-<short>` from `main`; `X.Y.Z` and `X.Y` from a `vX.Y.Z` tag
+- Branches: work lands on `dev` (image `:dev`) for testing, then `main` fast-forwards to it for a release (image `:latest`)
+- Tags: `latest` and `sha-<short>` from `main`; `dev` from `dev`; `X.Y.Z` and `X.Y` from a `vX.Y.Z` tag
 - Host: Unraid (PlumServer), pulled by tag, never built there
 - Rollback: set the container to the previous `X.Y.Z` or `sha-` tag
 
@@ -56,15 +60,15 @@ There is no database. Upgrading means pulling a new tag; nothing migrates.
 
 | Workflow | Triggers on | Does |
 |---|---|---|
-| `Review.yml` | pull request, push to `main` | `astro check`, build, entrypoint syntax; Claude review on PRs |
-| `BuildImage.yml` | pull request, push to `main`, tag `v*` | builds amd64, smoke-tests the container, then pushes amd64+arm64 to GHCR with provenance (not on PRs) |
+| `Review.yml` | pull request, push to `main` or `dev` | `astro check`, build, entrypoint syntax; Claude review on PRs |
+| `BuildImage.yml` | pull request, push to `main` or `dev`, tag `v*` | builds amd64 and smoke-tests the container. On `main`, `dev` and tags, pushes amd64+arm64 to GHCR with provenance (`:latest` from `main`, `:dev` from `dev`). On a PR from this repo, pushes the tested image as `:pr-<number>` for preview |
 | Dependabot | weekly | npm, base images and actions |
 
 | Secret / variable | Used by | Still to create |
 |---|---|---|
 | `GITHUB_TOKEN` | `BuildImage.yml` (GHCR push) | No, built in |
 | `ANTHROPIC_API_KEY` (secret) | `Review.yml` | Optional; the review skips without it |
-| `SITE_URL` (variable) | `BuildImage.yml` | Yes, once the domain is final |
+| `SITE_URL` (variable) | `BuildImage.yml` | Optional. Defaults to `https://www.plumsolutions.net` in `astro.config.mjs` |
 
 ## Security model
 
@@ -77,6 +81,14 @@ There is no database. Upgrading means pulling a new tag; nothing migrates.
   worker processes that handle requests run as `PUID`/`PGID`.
 - `server_tokens off`, `nosniff`, `SAMEORIGIN` framing and a strict referrer policy are
   set in `nginx/nginx.conf`.
+
+### Custom site pages beside Starlight
+
+**Chose**: home, projects and store as plain Astro pages; Starlight only under `/docs/`
+**Over**: everything inside Starlight, using its splash template for the home page
+**Because**: Starlight is a docs layout. A company home page and project showcase need
+their own design, and a shared token file keeps the two looking like one site.
+**Revisit when**: no plan to.
 
 ## Known limits
 

@@ -23,7 +23,8 @@ and the same port, path and variables.
 
 Working when: `http://<host>:8080/healthz` returns `ok`, and `http://<host>:8080/` shows the site.
 
-To change the site, edit Markdown in `src/content/docs/` and push to `main`. A new image
+To change the site, edit Markdown in `src/content/projects/` (the project list and
+pages) or `src/content/docs/docs/` (the documentation) and push to `main`. A new image
 is published a few minutes later; pull it on the host. Full setup is in
 [docs/DEV-SETUP.md](docs/DEV-SETUP.md).
 

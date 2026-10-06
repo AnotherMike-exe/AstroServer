@@ -1,0 +1,284 @@
+---
+// Layout for the site pages: home, projects and store. The docs use Starlight's own
+// layout, styled to match through src/styles/Starlight.css.
+import '../styles/Site.css';
+import LogoWide from '../assets/brand/LogoWide.svg?url';
+import LogoWideDark from '../assets/brand/LogoWideDark.svg?url';
+import Icon from '../assets/brand/Icon.svg?url';
+import { GITHUB_URL, NAV_LINKS, SITE_NAME, SOURCE_URL, isCurrent } from '../data/Site';
+
+interface Props {
+	title?: string;
+	description: string;
+}
+const { title, description } = Astro.props;
+const pageTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
+const pathname = Astro.url.pathname;
+const canonical = Astro.site ? new URL(pathname, Astro.site).href : undefined;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+		{canonical && <link rel="canonical" href={canonical} />}
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		{canonical && <meta property="og:url" content={canonical} />}
+		<meta name="theme-color" content="#802a90" />
+		<script is:inline>
+			// Same storage key as the Starlight docs, so the choice carries across.
+			(() => {
+				let stored = '';
+				try {
+					stored = localStorage.getItem('starlight-theme') || '';
+				} catch {}
+				const system = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme =
+					stored === 'light' || stored === 'dark' ? stored : system;
+			})();
+		</script>
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<header class="site-header">
+			<div class="wrap bar">
+				<a class="brand" href="/" aria-label={`${SITE_NAME} home`}>
+					<img class="logo light" src={LogoWide} alt="" width="160" height="52" />
+					<img class="logo dark" src={LogoWideDark} alt="" width="160" height="52" />
+				</a>
+				<nav aria-label="Main">
+					<ul>
+						{
+							NAV_LINKS.map((link) => (
+								<li>
+									<a
+										href={link.href}
+										aria-current={isCurrent(link, pathname) ? 'page' : undefined}
+									>
+										{link.label}
+									</a>
+								</li>
+							))
+						}
+						<li>
+							<a class="icon-link" href={GITHUB_URL} aria-label="GitHub">
+								<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+									<path
+										fill="currentColor"
+										d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.9.1 3.2.8.8 1.3 1.9 1.3 3.1 0 4.7-2.8 5.7-5.5 6 .5.4.9 1 .9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3"
+									></path>
+								</svg>
+							</a>
+						</li>
+						<li>
+							<button class="icon-link theme-toggle" type="button" aria-label="Switch to dark theme">
+								<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+									<path
+										fill="currentColor"
+										d="M12 3a9 9 0 1 0 9 9c0-.5 0-.9-.1-1.4A5.5 5.5 0 0 1 13.4 3.1L12 3Z"
+									></path>
+								</svg>
+							</button>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</header>
+
+		<main id="main">
+			<slot />
+		</main>
+
+		<footer class="site-footer">
+			<div class="wrap foot">
+				<img src={Icon} alt="" width="36" height="54" />
+				<p>
+					© {year} {SITE_NAME}. Built with Astro and served from a container on our own
+					hardware. <a href={SOURCE_URL}>Site source</a>.
+				</p>
+				<ul>
+					{
+						NAV_LINKS.map((link) => (
+							<li>
+								<a href={link.href}>{link.label}</a>
+							</li>
+						))
+					}
+					<li><a href={GITHUB_URL}>GitHub</a></li>
+				</ul>
+			</div>
+		</footer>
+
+		<script>
+			const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+			const root = document.documentElement;
+			const label = () => {
+				const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+				button?.setAttribute('aria-label', `Switch to ${next} theme`);
+			};
+			label();
+			button?.addEventListener('click', () => {
+				root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+				try {
+					localStorage.setItem('starlight-theme', root.dataset.theme);
+				} catch {}
+				label();
+			});
+		</script>
+	</body>
+</html>
+
+<style>
+	.skip {
+		position: absolute;
+		left: 1rem;
+		top: -3rem;
+		padding: 0.5rem 1rem;
+		background: var(--ps-accent);
+		color: var(--ps-on-accent);
+		border-radius: 999px;
+		z-index: 10;
+	}
+	.skip:focus {
+		top: 1rem;
+	}
+
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 5;
+		background: color-mix(in srgb, var(--ps-paper) 88%, transparent);
+		backdrop-filter: blur(10px);
+		border-bottom: 1px solid var(--ps-line);
+	}
+	.bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		height: 4.5rem;
+	}
+	.brand {
+		display: flex;
+		flex: none;
+	}
+	.logo {
+		height: 2.6rem;
+		width: auto;
+	}
+	.logo.dark,
+	:global([data-theme='dark']) .logo.light {
+		display: none;
+	}
+	:global([data-theme='dark']) .logo.dark {
+		display: block;
+	}
+
+	nav ul {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	nav a {
+		display: block;
+		padding: 0.45rem 0.8rem;
+		border-radius: 999px;
+		color: var(--ps-ink);
+		font-family: var(--ps-font-display);
+		font-weight: 500;
+		text-decoration: none;
+	}
+	nav a:hover {
+		background: var(--ps-surface);
+		color: var(--ps-ink);
+	}
+	nav a[aria-current='page'] {
+		color: var(--ps-accent);
+		background: var(--ps-surface);
+	}
+	.icon-link {
+		display: grid;
+		place-items: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: none;
+		color: var(--ps-ink-soft);
+		cursor: pointer;
+	}
+	.icon-link:hover {
+		background: var(--ps-surface);
+		color: var(--ps-ink);
+	}
+
+	@media (max-width: 40rem) {
+		.logo {
+			height: 2.1rem;
+		}
+		nav a {
+			padding: 0.4rem 0.55rem;
+			font-size: 0.95rem;
+		}
+		.icon-link {
+			width: 2.2rem;
+		}
+		nav li:has(a[aria-label='GitHub']) {
+			display: none;
+		}
+	}
+
+	.site-footer {
+		margin-top: 6rem;
+		border-top: 1px solid var(--ps-line);
+		padding-block: 2.5rem 3rem;
+		color: var(--ps-ink-soft);
+		font-size: 0.9rem;
+	}
+	.foot {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: 1.5rem;
+	}
+	.foot img {
+		height: 2.6rem;
+		width: auto;
+	}
+	.foot p {
+		max-width: 38rem;
+	}
+	.foot ul {
+		display: flex;
+		gap: 1.25rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.foot ul a {
+		color: var(--ps-ink-soft);
+		text-decoration: none;
+	}
+	.foot ul a:hover {
+		color: var(--ps-accent);
+	}
+	@media (max-width: 48rem) {
+		.foot {
+			grid-template-columns: 1fr;
+		}
+		.foot ul {
+			flex-wrap: wrap;
+		}
+	}
+</style>

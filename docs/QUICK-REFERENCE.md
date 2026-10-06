@@ -24,6 +24,12 @@ docker compose pull && docker compose up -d   # deploy a new image
 docker logs AstroServer
 docker exec AstroServer tail -n 50 /config/logs/error.log
 
+# Regenerate the logos after changing the master vector
+python3 scripts/BuildLogos.py Brand/LogoMaster.svg
+
+# Promote dev to a release (linear history, no merge commit)
+git checkout main && git pull && git merge --ff-only origin/dev && git push
+
 # Release a pinned version
 git tag v0.1.0 && git push origin v0.1.0
 ```
@@ -44,7 +50,7 @@ git tag v0.1.0 && git push origin v0.1.0
 | `UMASK` | `002` | Permissions for log files the container creates |
 | `TZ` | `UTC` | Log timestamps |
 | `DEBUG` | `false` | `true` raises the NGINX error log to `info` |
-| `SITE_URL` (build arg) | empty | Public URL for the sitemap and canonical links |
+| `SITE_URL` (build arg) | `https://www.plumsolutions.net` | Public URL for the sitemap and canonical links |
 
 ## Paths
 
@@ -53,7 +59,18 @@ git tag v0.1.0 && git push origin v0.1.0
 | `/config/logs/` | `access.log`, `error.log` |
 | `/config/nginx/` | Your `*.conf` additions; `CustomExample.conf.example` shows the shape |
 | `/usr/share/nginx/html` | The built site, inside the image |
-| `src/content/docs/` | Site source: `index.mdx`, `projects/`, `docs/` |
+| `src/content/projects/` | One Markdown file per project |
+| `src/content/docs/docs/` | Docs pages, one folder per project |
+| `src/styles/Tokens.css` | Brand colours and fonts |
+
+## Image tags
+
+| Tag | From |
+|---|---|
+| `latest`, `sha-<short>` | every push to `main` (release) |
+| `dev`, `sha-<short>` | every push to `dev` (testing) |
+| `X.Y.Z`, `X.Y` | a `vX.Y.Z` tag |
+| `pr-<number>` | a pull request from this repository, for preview before merge |
 
 ## Troubleshooting
 

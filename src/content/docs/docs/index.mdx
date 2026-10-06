@@ -1,0 +1,33 @@
+---
+title: Documentation
+description: Setup guides and reference for Plum Solutions projects.
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+Each project has its own section in the sidebar. Software projects start with a
+getting-started guide. Hardware projects start with their current status, and gain build
+guides once a board is released.
+
+<CardGrid>
+	<LinkCard
+		title="Plum Audio"
+		description="Synchronized multi-room audio for Raspberry Pi."
+		href="/docs/plum-audio/"
+	/>
+	<LinkCard
+		title="Anilist Link"
+		description="AniList with Plex, Jellyfin, Crunchyroll, Sonarr and Radarr."
+		href="/docs/anilist-link/"
+	/>
+	<LinkCard
+		title="Plum Remotes"
+		description="A rechargeable remote and hub for Home Assistant and TVs."
+		href="/docs/plum-remotes/"
+	/>
+	<LinkCard
+		title="WiFi Serial Bridge"
+		description="Network console ports over WiFi, on battery."
+		href="/docs/wifi-serial-bridge/"
+	/>
+</CardGrid>

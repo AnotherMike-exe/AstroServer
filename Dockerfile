@@ -21,7 +21,7 @@ ENV SITE_URL=${SITE_URL}
 RUN npm run build
 
 # ---- Runtime stage: NGINX serves the static files ----
-FROM nginx:1.30-alpine
+FROM nginx:1.31-alpine
 
 LABEL org.opencontainers.image.source="https://github.com/AnotherMike-exe/AstroServer" \
       org.opencontainers.image.licenses="MIT" \

@@ -5,7 +5,10 @@
 # Adapted to the Plum Binhex conventions: PUID/PGID/UMASK/TZ, logs under /config.
 
 # ---- Build stage: Astro builds the static site into /app/dist ----
-FROM node:24-alpine AS build
+# The output is plain HTML/CSS/JS, the same on every architecture, so this stage runs
+# on the build machine's own platform. The arm64 image then skips building under
+# emulation, which is the slow part of a multi-arch build.
+FROM --platform=$BUILDPLATFORM node:24-alpine AS build
 
 WORKDIR /app
 

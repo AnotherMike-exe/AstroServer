@@ -1,0 +1,45 @@
+---
+// Starlight override: puts the site's main links (Projects, Docs, Store) in the
+// docs header, before Starlight's own social icons, so visitors can leave the docs.
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+import { NAV_LINKS, isCurrent } from '../data/Site';
+
+const pathname = Astro.url.pathname;
+---
+
+<nav class="site-links" aria-label="Site">
+	{
+		NAV_LINKS.map((link) => (
+			<a href={link.href} aria-current={isCurrent(link, pathname) ? 'page' : undefined}>
+				{link.label}
+			</a>
+		))
+	}
+</nav>
+<Default />
+
+<style>
+	.site-links {
+		display: none;
+		gap: 1.25rem;
+		margin-inline-end: 0.5rem;
+		font-family: var(--ps-font-display);
+		font-size: var(--sl-text-sm);
+		font-weight: 500;
+	}
+	.site-links a {
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+	}
+	.site-links a:hover {
+		color: var(--sl-color-white);
+	}
+	.site-links a[aria-current='page'] {
+		color: var(--sl-color-accent-high);
+	}
+	@media (min-width: 50rem) {
+		.site-links {
+			display: flex;
+		}
+	}
+</style>

@@ -1,0 +1,52 @@
+---
+// A project's status as a dot, echoing the berry. The label is always shown next
+// to it, so colour is never the only signal.
+//   Available       filled leaf dot
+//   In development  plum ring
+//   Design phase    dotted plum ring
+interface Props {
+	status: 'Available' | 'In development' | 'Design phase';
+	withLabel?: boolean;
+}
+const { status, withLabel = true } = Astro.props;
+const variant = { Available: 'on', 'In development': 'building', 'Design phase': 'design' }[status];
+---
+
+<span class:list={['status', variant]}>
+	<span class="dot" aria-hidden="true"></span>
+	{withLabel ? <span class="label">{status}</span> : <span class="sr-only">{status}</span>}
+</span>
+
+<style>
+	.status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5em;
+		font-size: 0.875rem;
+		color: var(--ps-ink-soft);
+		white-space: nowrap;
+	}
+	.dot {
+		width: 0.8em;
+		height: 0.8em;
+		border-radius: 50%;
+		flex: none;
+	}
+	.on .dot {
+		background: var(--ps-status-on);
+	}
+	.building .dot {
+		border: 2.5px solid var(--ps-accent);
+	}
+	.design .dot {
+		border: 2.5px dotted var(--ps-accent);
+	}
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+</style>

@@ -1,0 +1,37 @@
+/* Plum Solutions design tokens, shared by the site pages and the Starlight docs.
+ * Brand colours come from the logo vector: plum #802a90, leaf #25b164.
+ * Leaf is a graphic colour. It is too light for text on a light background. */
+
+@import '@fontsource-variable/lexend';
+@import '@fontsource-variable/lexend-deca';
+
+:root {
+	--ps-font-display: 'Lexend Variable', 'Lexend', system-ui, sans-serif;
+	--ps-font-body: 'Lexend Deca Variable', 'Lexend Deca', system-ui, sans-serif;
+
+	--ps-plum: #802a90;
+	--ps-leaf: #25b164;
+
+	/* Light theme (default). */
+	--ps-paper: #fbf9fc;
+	--ps-surface: #f3edf5;
+	--ps-line: #e3d8e7;
+	--ps-ink: #231a27;
+	--ps-ink-soft: #5d4e64;
+	--ps-accent: #802a90;
+	--ps-accent-strong: #5f1d6b;
+	--ps-on-accent: #ffffff;
+	--ps-status-on: #1f9a56;
+}
+
+:root[data-theme='dark'] {
+	--ps-paper: #1c1320;
+	--ps-surface: #261b2b;
+	--ps-line: #3a2c40;
+	--ps-ink: #f3ecf5;
+	--ps-ink-soft: #b9a8c0;
+	--ps-accent: #c88ad6;
+	--ps-accent-strong: #e3c2ea;
+	--ps-on-accent: #1c1320;
+	--ps-status-on: #3cc97b;
+}

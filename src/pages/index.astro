@@ -1,0 +1,268 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Berry from '../components/Berry.astro';
+import StatusDot from '../components/StatusDot.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout description="Plum Solutions builds open hardware and self-hosted software for the home and the homelab.">
+	<section class="hero wrap">
+		<div class="hero-text">
+			<h1>Hardware and software for the home and the homelab.</h1>
+			<p class="lede">
+				Plum Solutions designs circuit boards, firmware and self-hosted services, and documents
+				each project here so you can run it, build it or learn from it.
+			</p>
+			<div class="actions">
+				<a class="button primary" href="#projects">See the projects</a>
+				<a class="button quiet" href="/docs/">Read the docs</a>
+			</div>
+		</div>
+		<Berry class="hero-berry" />
+	</section>
+
+	<section id="projects" class="projects wrap" aria-labelledby="projects-title">
+		<div class="section-head">
+			<h2 id="projects-title">Projects</h2>
+			<ul class="legend" aria-label="Status key">
+				<li><StatusDot status="Available" /></li>
+				<li><StatusDot status="In development" /></li>
+				<li><StatusDot status="Design phase" /></li>
+			</ul>
+		</div>
+
+		<ol class="project-list">
+			{
+				projects.map((project) => (
+					<li class="project">
+						<div class="project-main">
+							<StatusDot status={project.data.status} />
+							<h3>
+								<a href={`/projects/${project.id}/`}>{project.data.title}</a>
+							</h3>
+							<p>{project.data.summary}</p>
+						</div>
+						<dl class="project-facts">
+							<div>
+								<dt>Type</dt>
+								<dd>{project.data.kind}</dd>
+							</div>
+							<div>
+								<dt>Runs on</dt>
+								<dd>{project.data.platform}</dd>
+							</div>
+						</dl>
+						<ul class="project-links">
+							<li>
+								<a href={`/projects/${project.id}/`}>
+									About<span class="sr-only"> {project.data.title}</span>
+								</a>
+							</li>
+							{project.data.docs && (
+								<li>
+									<a href={project.data.docs}>
+										Docs<span class="sr-only"> for {project.data.title}</span>
+									</a>
+								</li>
+							)}
+							{project.data.repo && (
+								<li>
+									<a href={project.data.repo}>
+										Source<span class="sr-only"> of {project.data.title}</span>
+									</a>
+								</li>
+							)}
+						</ul>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section class="about wrap" aria-labelledby="about-title">
+		<h2 id="about-title">About Plum Solutions</h2>
+		<div class="about-body">
+			<p>
+				Plum Solutions is a small studio for custom fabrication, software and IT infrastructure.
+				The projects here started as fixes for our own home and network: a speaker system with no
+				central server, a remote that lasts months on a charge, a way to reach a switch console
+				without a cable to the rack.
+			</p>
+			<p>
+				Each one gets the same treatment as client work: a written design record, tested
+				releases, and documentation good enough to rebuild it from.
+			</p>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+		align-items: center;
+		gap: 3rem;
+		padding-block: 5.5rem 4.5rem;
+	}
+	h1 {
+		font-size: clamp(2.6rem, 5.6vw, 4.6rem);
+		font-weight: 750;
+		letter-spacing: -0.035em;
+		line-height: 1.02;
+		max-width: 14ch;
+	}
+	.lede {
+		margin-top: 1.5rem;
+		max-width: 34rem;
+		font-size: 1.2rem;
+		color: var(--ps-ink-soft);
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2.25rem;
+	}
+	.hero :global(.hero-berry) {
+		width: 100%;
+		max-width: 19rem;
+		justify-self: center;
+	}
+
+	.section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 1rem 2rem;
+		padding-bottom: 1.25rem;
+		border-bottom: 2px solid var(--ps-ink);
+	}
+	h2 {
+		font-size: 2rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+	}
+	.legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.project-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.project {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 15rem 9rem;
+		gap: 1rem 2.5rem;
+		align-items: start;
+		padding-block: 2rem;
+		border-bottom: 1px solid var(--ps-line);
+	}
+	.project h3 {
+		margin-top: 0.5rem;
+		font-size: clamp(1.6rem, 3vw, 2.1rem);
+		font-weight: 700;
+		letter-spacing: -0.025em;
+	}
+	.project h3 a {
+		color: var(--ps-ink);
+		text-decoration: none;
+	}
+	.project h3 a:hover {
+		color: var(--ps-accent);
+	}
+	.project-main p {
+		margin-top: 0.6rem;
+		max-width: 36rem;
+		color: var(--ps-ink-soft);
+	}
+	.project-facts {
+		margin: 2rem 0 0;
+		display: grid;
+		gap: 0.75rem;
+		font-size: 0.95rem;
+	}
+	.project-facts dt {
+		color: var(--ps-ink-soft);
+		font-size: 0.8rem;
+	}
+	.project-facts dd {
+		margin: 0;
+	}
+	.project-links {
+		list-style: none;
+		margin: 2rem 0 0;
+		padding: 0;
+		display: grid;
+		gap: 0.35rem;
+		font-family: var(--ps-font-display);
+		font-weight: 500;
+	}
+
+	.about {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+		gap: 2rem 4rem;
+		margin-top: 6rem;
+	}
+	.about-body {
+		display: grid;
+		gap: 1rem;
+		max-width: 38rem;
+		font-size: 1.1rem;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	@media (max-width: 56rem) {
+		.project {
+			grid-template-columns: minmax(0, 1fr) auto;
+		}
+		.project-main {
+			grid-column: 1 / -1;
+		}
+		.project-facts,
+		.project-links {
+			margin-top: 0;
+		}
+		.project-links {
+			display: flex;
+			gap: 1.25rem;
+			align-self: end;
+		}
+		.about {
+			grid-template-columns: 1fr;
+		}
+	}
+	@media (max-width: 40rem) {
+		.hero {
+			grid-template-columns: 1fr;
+			padding-block: 2.5rem 3rem;
+			gap: 1.5rem;
+		}
+		.hero :global(.hero-berry) {
+			order: -1;
+			max-width: 6.5rem;
+			justify-self: start;
+		}
+		.project {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

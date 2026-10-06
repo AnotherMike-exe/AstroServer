@@ -1,0 +1,49 @@
+/* Brand theme for the Starlight docs at /docs/.
+ * Starlight's dark theme is the :root default and light is [data-theme='light']. */
+
+@import './Tokens.css';
+
+:root {
+	--sl-font: var(--ps-font-body);
+
+	--sl-color-accent-low: #3b1843;
+	--sl-color-accent: #a95bb8;
+	--sl-color-accent-high: #ecd2f2;
+	--sl-color-white: #ffffff;
+	--sl-color-gray-1: #f1e9f4;
+	--sl-color-gray-2: #cfc0d5;
+	--sl-color-gray-3: #a08fa8;
+	--sl-color-gray-4: #6c5a74;
+	--sl-color-gray-5: #4a3a51;
+	--sl-color-gray-6: #2e2233;
+	--sl-color-black: #1c1320;
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: #f0dcf4;
+	--sl-color-accent: #802a90;
+	--sl-color-accent-high: #4e1659;
+	--sl-color-white: #1c1320;
+	--sl-color-gray-1: #2e2233;
+	--sl-color-gray-2: #4a3a51;
+	--sl-color-gray-3: #6c5a74;
+	--sl-color-gray-4: #a08fa8;
+	--sl-color-gray-5: #d9cddd;
+	--sl-color-gray-6: #f2ebf4;
+	--sl-color-gray-7: #f9f5fa;
+	--sl-color-black: #ffffff;
+}
+
+/* Headings use the display face, heavy, like the wordmark. */
+.sl-markdown-content :is(h1, h2, h3, h4),
+h1#_top {
+	font-family: var(--ps-font-display);
+	font-weight: 650;
+	letter-spacing: -0.015em;
+}
+
+/* The wide logo needs a little more height than Starlight's default. */
+.site-title img {
+	height: 2.35rem;
+	width: auto;
+}

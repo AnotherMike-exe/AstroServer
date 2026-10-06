@@ -7,7 +7,8 @@ that is missing, because it is trusted.
 
 The Plum Solutions public website — home page, projects showcase and project
 documentation — built as a static Astro + Starlight site and shipped as an NGINX image
-on GHCR. The maintainer edits Markdown, pushes to `main`, and Unraid pulls the new tag.
+on GHCR. Work lands on `dev` (image `:dev`) for testing; `main` fast-forwards to it
+for a release (image `:latest`), and Unraid pulls the tag.
 A store comes later and will be a separate service.
 
 **Stage**: prototype

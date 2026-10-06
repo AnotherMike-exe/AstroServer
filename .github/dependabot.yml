@@ -1,0 +1,32 @@
+# Dependabot version updates. Grouped, so one ecosystem opens one pull request a week.
+version: 2
+updates:
+  # Always present. A pinned action rots, and an unmaintained action is a supply
+  # chain problem.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels: [dependencies]
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # Astro, Starlight and friends. Major versions come as separate pull requests,
+  # because an Astro major usually needs the upgrade guide.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    labels: [dependencies]
+    groups:
+      npm:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  # node and nginx base images.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    labels: [dependencies]

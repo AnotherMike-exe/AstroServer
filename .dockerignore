@@ -1,0 +1,20 @@
+.git
+.github
+node_modules
+dist
+.astro
+_resources
+# Root-level only: project docs, not the site content in src/content/docs/.
+/docs
+/README.md
+/CLAUDE.md
+*.log
+.env
+.env.*
+.DS_Store
+.idea
+.vscode
+Thumbs.db
+app-config
+config
+docker-compose.yml

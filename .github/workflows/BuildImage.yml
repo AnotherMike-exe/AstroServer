@@ -1,0 +1,118 @@
+name: BuildImage
+
+# Build the site image, smoke-test it, and publish it to GHCR.
+#   push to main  → :latest and :sha-<short>
+#   tag v1.2.3    → :1.2.3, :1.2 and :latest
+#   pull request  → build and smoke test only, amd64, nothing pushed
+# Auth uses GITHUB_TOKEN. No repository secret is needed.
+#
+# SITE_URL is a repository variable (Settings → Secrets and variables → Actions →
+# Variables), e.g. https://example.com. It is optional: without it the site builds
+# without a sitemap or canonical links.
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/anothermike-exe/astro-server
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up QEMU
+        if: github.event_name != 'pull_request'
+        uses: docker/setup-qemu-action@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # Build amd64 into the local daemon first, so the smoke test runs the exact
+      # image before anything is published.
+      - name: Build test image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: astro-server:test
+          build-args: |
+            SITE_URL=${{ vars.SITE_URL }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test
+        run: |
+          set -eu
+          mkdir -p "$RUNNER_TEMP/config"
+          docker run -d --name AstroServer -p 8080:8080 \
+            -e PUID=1234 -e PGID=1234 -e UMASK=002 -e TZ=America/Los_Angeles \
+            -v "$RUNNER_TEMP/config:/config" astro-server:test
+          for i in $(seq 1 20); do
+            curl -fs http://127.0.0.1:8080/healthz >/dev/null && break
+            sleep 1
+          done
+          curl -fs http://127.0.0.1:8080/ | grep -q '<title>'
+          curl -fs http://127.0.0.1:8080/docs/ >/dev/null
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/does-not-exist)" = 404
+          test -s "$RUNNER_TEMP/config/logs/access.log"
+          test "$(stat -c '%u:%g' "$RUNNER_TEMP/config/logs/access.log")" = "1234:1234"
+          docker exec AstroServer sh -c 'ps -o user,args | grep "nginx: worker" | grep -v grep'
+          echo "Smoke test passed."
+
+      - name: Container log
+        if: always()
+        run: docker logs AstroServer || true
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute tags
+        id: meta
+        if: github.event_name != 'pull_request'
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+
+      - name: Build and push
+        id: build
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            SITE_URL=${{ vars.SITE_URL }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Attest build provenance
+        if: github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true

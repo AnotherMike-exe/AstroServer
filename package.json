@@ -1,0 +1,32 @@
+{
+  "name": "astro-server",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.42.5",
+    "astro": "^7.3.6",
+    "sharp": "^0.35.5"
+  },
+  "description": "Plum Solutions website: home, projects and documentation, built with Astro and Starlight and served by nginx.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnotherMike-exe/AstroServer.git"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
+  }
+}

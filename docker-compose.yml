@@ -1,0 +1,21 @@
+services:
+  AstroServer:
+    image: ghcr.io/anothermike-exe/astro-server:latest
+    # Pin a release tag (e.g. :0.1.0) once one exists, so a rollback is one edit.
+    # To build locally instead: comment out image above and uncomment below.
+    # build:
+    #   context: .
+    #   args:
+    #     SITE_URL: https://example.com
+    container_name: AstroServer
+    restart: unless-stopped
+    volumes:
+      - ./app-config:/config
+    environment:
+      - PUID=99
+      - PGID=100
+      - UMASK=002
+      - TZ=America/Los_Angeles
+      - DEBUG=false
+    ports:
+      - "8080:8080"

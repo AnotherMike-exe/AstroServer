@@ -5,7 +5,7 @@
 # Adapted to the Plum Binhex conventions: PUID/PGID/UMASK/TZ, logs under /config.
 
 # ---- Build stage: Astro builds the static site into /app/dist ----
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 
 WORKDIR /app
 

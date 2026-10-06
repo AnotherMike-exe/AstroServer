@@ -51,7 +51,8 @@ There is no database. Upgrading means pulling a new tag; nothing migrates.
 ## Deployment
 
 - Image: `ghcr.io/anothermike-exe/astro-server`
-- Tags: `latest` and `sha-<short>` from `main`; `X.Y.Z` and `X.Y` from a `vX.Y.Z` tag
+- Branches: work lands on `dev` (image `:dev`) for testing, then `main` fast-forwards to it for a release (image `:latest`)
+- Tags: `latest` and `sha-<short>` from `main`; `dev` from `dev`; `X.Y.Z` and `X.Y` from a `vX.Y.Z` tag
 - Host: Unraid (PlumServer), pulled by tag, never built there
 - Rollback: set the container to the previous `X.Y.Z` or `sha-` tag
 
@@ -59,8 +60,8 @@ There is no database. Upgrading means pulling a new tag; nothing migrates.
 
 | Workflow | Triggers on | Does |
 |---|---|---|
-| `Review.yml` | pull request, push to `main` | `astro check`, build, entrypoint syntax; Claude review on PRs |
-| `BuildImage.yml` | pull request, push to `main`, tag `v*` | builds amd64 and smoke-tests the container. On `main` and tags, pushes amd64+arm64 to GHCR with provenance. On a PR from this repo, pushes the tested image as `:pr-<number>` for preview |
+| `Review.yml` | pull request, push to `main` or `dev` | `astro check`, build, entrypoint syntax; Claude review on PRs |
+| `BuildImage.yml` | pull request, push to `main` or `dev`, tag `v*` | builds amd64 and smoke-tests the container. On `main`, `dev` and tags, pushes amd64+arm64 to GHCR with provenance (`:latest` from `main`, `:dev` from `dev`). On a PR from this repo, pushes the tested image as `:pr-<number>` for preview |
 | Dependabot | weekly | npm, base images and actions |
 
 | Secret / variable | Used by | Still to create |

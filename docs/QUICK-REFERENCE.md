@@ -27,6 +27,9 @@ docker exec AstroServer tail -n 50 /config/logs/error.log
 # Regenerate the logos after changing the master vector
 python3 scripts/BuildLogos.py Brand/LogoMaster.svg
 
+# Promote dev to a release (linear history, no merge commit)
+git checkout main && git pull && git merge --ff-only origin/dev && git push
+
 # Release a pinned version
 git tag v0.1.0 && git push origin v0.1.0
 ```
@@ -64,7 +67,8 @@ git tag v0.1.0 && git push origin v0.1.0
 
 | Tag | From |
 |---|---|
-| `latest`, `sha-<short>` | every push to `main` |
+| `latest`, `sha-<short>` | every push to `main` (release) |
+| `dev`, `sha-<short>` | every push to `dev` (testing) |
 | `X.Y.Z`, `X.Y` | a `vX.Y.Z` tag |
 | `pr-<number>` | a pull request from this repository, for preview before merge |
 

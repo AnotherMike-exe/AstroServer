@@ -1,7 +1,8 @@
 name: BuildImage
 
 # Build the site image, smoke-test it, and publish it to GHCR.
-#   push to main  → :latest and :sha-<short>
+#   push to main  → :latest and :sha-<short>   (release)
+#   push to dev   → :dev and :sha-<short>      (testing before a release)
 #   tag v1.2.3    → :1.2.3, :1.2 and :latest
 #   pull request  → build and smoke test only, amd64, nothing pushed
 # Auth uses GITHUB_TOKEN. No repository secret is needed.
@@ -11,7 +12,7 @@ name: BuildImage
 # without a sitemap or canonical links.
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
     tags: ['v*']
   pull_request:
   workflow_dispatch:
@@ -113,6 +114,7 @@ jobs:
           images: ${{ env.IMAGE }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha

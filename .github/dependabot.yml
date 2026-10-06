@@ -23,10 +23,23 @@ updates:
       npm:
         patterns: ["*"]
         update-types: [minor, patch]
+    ignore:
+      # @astrojs/check supports the TypeScript majors it lists as peers. Move
+      # TypeScript by hand when @astrojs/check adds the next one.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
 
-  # node and nginx base images.
+  # Base images. Patch updates only:
+  # - nginx odd minors (1.31, 1.33) are the mainline branch; this image tracks
+  #   stable (even minors). Move to the next stable by hand each April.
+  # - node stays on the Active LTS major. Move by hand once the next major is LTS.
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
     labels: [dependencies]
+    ignore:
+      - dependency-name: nginx
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: node
+        update-types: [version-update:semver-major]

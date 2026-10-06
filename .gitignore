@@ -43,13 +43,13 @@ coverage/
 .pytest_cache/
 htmlcov/
 
-# Docker volumes (local development)
-app-config/
-app-data/
-app-media/
-config/
-data/
-media/
+# Docker volumes (local development). Anchored to the root, so src/data/ is not caught.
+/app-config/
+/app-data/
+/app-media/
+/config/
+/data/
+/media/
 
 # Temporary files
 tmp/
